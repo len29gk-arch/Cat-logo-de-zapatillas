@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — Tienda de Zapatillas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAFAF9;
+    --ink: #18181B;
+    --accent: #C1543C;
+    --stone: #F2F1EC;
+    --stone-dark: #E5E5E2;
+    --muted: #8A8A85;
+    --muted-2: #B4B4AF;
+    --white: #FFFFFF;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--bg);
+    border-bottom:1px solid var(--stone-dark);
+  }
+  .header-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:16px 0;
+  }
+  .logo{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:20px;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+  }
+  .header-actions{ display:flex; align-items:center; gap:14px; }
+  .icon-btn{
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:1px solid var(--stone-dark);
+    cursor:pointer; color:var(--ink);
+  }
+  .icon-btn:hover{ border-color:var(--ink); }
+  .search-bar{
+    max-width:0; overflow:hidden;
+    transition:max-width .25s ease;
+  }
+  .search-bar.open{ max-width:260px; margin-right:8px; }
+  .search-bar input{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--stone-dark);
+    background:var(--white);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    outline:none;
+  }
+  .search-bar input:focus{ border-color:var(--ink); }
+
+  /* ---------- CARRUSEL ---------- */
+  .carousel{
+    position:relative;
+    height:220px;
+    background:var(--stone);
+    overflow:hidden;
+    margin-top:20px;
+  }
+  .slide{
+    position:absolute; inset:0;
+    display:flex; align-items:flex-end;
+    padding:24px;
+    opacity:0; transition:opacity .5s ease;
+    pointer-events:none;
+  }
+  .slide.active{ opacity:1; pointer-events:auto; }
+  .slide-photo{
+    position:absolute; right:24px; top:16px; bottom:16px;
+    width:40%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .slide-photo img{ max-width:100%; max-height:100%; object-fit:contain; }
+  .slide-info{ max-width:55%; }
+  .slide-tag{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--accent); font-weight:600; margin-bottom:6px;
+  }
+  .slide-name{
+    font-family:'Archivo',sans-serif; font-weight:700;
+    font-size:26px; line-height:1.1; margin-bottom:8px;
+  }
+  .slide-price{ font-size:16px; font-weight:600; }
+  .slide-price .old{ color:var(--muted-2); text-decoration:line-through; font-weight:400; margin-right:8px; font-size:14px; }
+  .dots{
+    position:absolute; bottom:14px; left:24px;
+    display:flex; gap:6px; z-index:5;
+  }
+  .dot{
+    width:8px; height:8px; background:var(--muted-2); cursor:pointer; border:none; padding:0;
+  }
+  .dot.active{ background:var(--ink); }
+
+  /* ---------- MARCAS ---------- */
+  .section-label{
+    font-size:12px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--muted); font-weight:600;
+    margin:36px 0 14px;
+  }
+  .brands-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(140px,1fr));
+    gap:12px;
+  }
+  .brand-card{
+    height:90px;
+    background:var(--stone);
+    border:1px solid var(--stone-dark);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+  }
+  .brand-card:hover{ border-color:var(--ink); }
+  .brand-card img{ max-width:70%; max-height:60%; object-fit:contain; }
+  .brand-card span{
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:14px;
+    text-transform:uppercase;
+  }
+
+  /* ---------- SECCIONES POR MARCA ---------- */
+  .brand-section{ margin-top:44px; scroll-margin-top:90px; }
+  .brand-section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:16px; padding-bottom:10px;
+    border-bottom:2px solid var(--ink);
+  }
+  .brand-section-head h2{
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:20px;
+    text-transform:uppercase; letter-spacing:0.3px;
+  }
+  .brand-count{ font-size:12px; color:var(--muted); }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(160px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--white);
+    border:1px solid var(--stone-dark);
+    display:flex; flex-direction:column;
+  }
+  .card-media{
+    aspect-ratio:1/1;
+    position:relative;
+    background:var(--stone);
+    display:flex; align-items:center; justify-content:center;
+    padding:14px;
+  }
+  .card-media img, .card-media svg{ max-width:100%; max-height:100%; object-fit:contain; }
+  .discount-badge{
+    position:absolute; top:8px; right:8px;
+    background:var(--accent); color:var(--white);
+    font-size:11px; font-weight:600;
+    padding:3px 6px;
+  }
+  .tag-badge{
+    position:absolute; top:8px; left:8px;
+    background:var(--ink); color:var(--white);
+    font-size:10px; text-transform:uppercase; letter-spacing:0.05em;
+    padding:3px 6px;
+  }
+  .card-body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card-name{ font-size:13px; font-weight:600; line-height:1.3; }
+  .card-sizes{ font-size:11px; color:var(--muted); }
+  .card-price{ margin-top:auto; display:flex; align-items:baseline; gap:6px; }
+  .price-now{ font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; }
+  .price-old{ font-size:12px; color:var(--muted-2); text-decoration:line-through; }
+  .card-cta{
+    margin-top:8px;
+    display:block; text-align:center;
+    background:var(--ink); color:var(--white);
+    font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    padding:9px; text-decoration:none;
+  }
+  .card-cta:hover{ background:var(--accent); }
+
+  .empty-msg{ color:var(--muted); font-size:14px; padding:20px 0; }
+
+  /* ---------- WHATSAPP FLOTANTE ---------- */
+  .wa-float{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:52px; height:52px;
+    background:var(--ink); color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none; font-size:22px;
+  }
+  .wa-float:hover{ background:var(--accent); }
+
+  footer{
+    margin-top:60px; padding:28px 0 50px;
+    border-top:1px solid var(--stone-dark);
+    font-size:12px; color:var(--muted);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  @media (max-width:640px){
+    .slide-info{ max-width:60%; }
+    .slide-name{ font-size:20px; }
+    .slide-photo{ width:38%; }
+    .carousel{ height:190px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-row">
+    <div class="logo">TU ESTILO 70</div>
+    <div class="header-actions">
+      <div class="search-bar" id="searchBar">
+        <input type="text" id="searchInput" placeholder="Buscar producto...">
+      </div>
+      <button class="icon-btn" id="searchToggle" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="carousel" id="carousel"></div>
+
+  <div class="section-label">Marcas</div>
+  <div class="brands-grid" id="brandsGrid"></div>
+
+  <div id="brandSections"></div>
+</div>
+
+<a href="https://wa.me/51984546373" class="wa-float" target="_blank" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.05 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.2 8.2 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23M8.53 7.33c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03 0 1.2.87 2.36.99 2.52.12.16 1.7 2.6 4.15 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.09.47-.07 1.44-.59 1.64-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.63-1.19-1.42-1.33-1.66-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.47-.39-.4-.54-.41-.14-.01-.3-.01-.46-.01"/></svg>
+</a>
+
+<footer class="wrap">
+  <span>© TU ESTILO 70</span>
+  <span>Hecho con catálogo digital</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+/* =========================================================
+   CONEXIÓN A GOOGLE SHEETS
+   Pegá acá tus dos links publicados como CSV:
+   1. SHEET_PRODUCTOS: pestaña con nombre, marca, precio, precio_anterior, talla, tag, foto_url
+   2. SHEET_MARCAS: pestaña con marca, logo_url
+========================================================= */
+const SHEET_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXNG_wi5fYQ613ZRceRZh8sH20MnK2gyqCuBZG5_Z2jivNFeOcz0SYFLe9bk69oLI33vWNMxhwyJ9s/pub?gid=0&single=true&output=csv";
+const SHEET_MARCAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXNG_wi5fYQ613ZRceRZh8sH20MnK2gyqCuBZG5_Z2jivNFeOcz0SYFLe9bk69oLI33vWNMxhwyJ9s/pub?gid=1486876337&single=true&output=csv";
+
+const numeroWhatsapp = "51984546373";
+
+const productosDeEjemplo = [
+  { name:"Runner Classic", brand:"NIKE", price:45000, oldPrice:52000, sizes:["40","41","42"], tag:"nuevo", foto:null },
+  { name:"Street Low", brand:"ADIDAS", price:38000, oldPrice:null, sizes:["35","36","37"], tag:"oferta", foto:null },
+  { name:"Kids Sprint", brand:"PUMA", price:29000, oldPrice:null, sizes:["28","29","30"], tag:null, foto:null },
+];
+const marcasDeEjemplo = [
+  { marca:"NIKE", logo:null },
+  { marca:"ADIDAS", logo:null },
+  { marca:"PUMA", logo:null },
+];
+
+let products = [];
+let brands = [];
+
+function fetchCSV(url){
+  return fetch(url).then(res => res.text()).then(text => {
+    const r = Papa.parse(text, { header:true, skipEmptyLines:true });
+    return r.data.map(fila => {
+      const f = {};
+      Object.keys(fila).forEach(k => f[k.trim().toLowerCase()] = fila[k]);
+      return f;
+    });
+  });
+}
+
+function cargarDatos(callback){
+  const p1 = SHEET_PRODUCTOS ? fetchCSV(SHEET_PRODUCTOS) : Promise.resolve(null);
+  const p2 = SHEET_MARCAS ? fetchCSV(SHEET_MARCAS) : Promise.resolve(null);
+
+  Promise.all([p1, p2]).then(([filasProd, filasMarcas]) => {
+    products = filasProd ? filasProd.filter(f => f.nombre).map(f => ({
+      name: f.nombre,
+      brand: (f.marca || "SIN MARCA").trim(),
+      price: Number(f.precio) || 0,
+      oldPrice: f.precio_anterior ? Number(f.precio_anterior) : null,
+      sizes: (f.talla || f.talles || "").split(",").map(s=>s.trim()).filter(Boolean),
+      tag: f.tag ? f.tag.trim().toLowerCase() : null,
+      foto: f.foto_url || null
+    })) : productosDeEjemplo;
+
+    brands = filasMarcas ? filasMarcas.filter(f => f.marca).map(f => ({
+      marca: f.marca.trim(),
+      logo: f.logo_url || null
+    })) : (SHEET_MARCAS ? [] : marcasDeEjemplo);
+
+    if(brands.length === 0){
+      const nombres = [...new Set(products.map(p=>p.brand))];
+      brands = nombres.map(n => ({ marca:n, logo:null }));
+    }
+    callback();
+  }).catch(err => {
+    console.error("Error cargando Google Sheets:", err);
+    products = productosDeEjemplo;
+    brands = marcasDeEjemplo;
+    callback();
+  });
+}
+
+function money(n){ return "S/ " + n.toLocaleString("es-PE"); }
+
+function sneakerSVG(){
+  return `<svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 45 C5 35, 15 32, 22 30 L45 18 C50 15, 58 14, 63 17 L80 27 C88 30, 95 33, 95 42 L95 48 C95 51, 92 53, 89 53 L10 53 C7 53, 5 51, 5 48 Z" fill="#D6D5CE"/>
+  </svg>`;
+}
+
+function renderCarousel(){
+  const destacados = products.slice(0,5);
+  const el = document.getElementById("carousel");
+  if(destacados.length === 0){ el.innerHTML = ""; return; }
+  el.innerHTML = destacados.map((p,i) => `
+    <div class="slide ${i===0 ? 'active':''}" data-i="${i}">
+      <div class="slide-info">
+        <div class="slide-tag">${p.tag ? p.tag : 'destacado'}</div>
+        <div class="slide-name">${p.name}</div>
+        <div class="slide-price">
+          ${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ""}
+          ${money(p.price)}
+        </div>
+      </div>
+      <div class="slide-photo">${p.foto ? `<img src="${p.foto}">` : sneakerSVG()}</div>
+    </div>
+  `).join("") + `<div class="dots">${destacados.map((_,i)=>`<button class="dot ${i===0?'active':''}" data-i="${i}"></button>`).join("")}</div>`;
+
+  let actual = 0;
+  const slides = el.querySelectorAll(".slide");
+  const dots = el.querySelectorAll(".dot");
+  function ir(i){
+    slides.forEach(s=>s.classList.remove("active"));
+    dots.forEach(d=>d.classList.remove("active"));
+    slides[i].classList.add("active");
+    dots[i].classList.add("active");
+    actual = i;
+  }
+  dots.forEach(d => d.addEventListener("click", ()=> ir(Number(d.dataset.i))));
+  setInterval(()=> ir((actual+1) % slides.length), 4500);
+}
+
+function renderBrandsGrid(){
+  const el = document.getElementById("brandsGrid");
+  el.innerHTML = brands.map(b => `
+    <div class="brand-card" data-brand="${b.marca}">
+      ${b.logo ? `<img src="${b.logo}">` : `<span>${b.marca}</span>`}
+    </div>
+  `).join("");
+  el.querySelectorAll(".brand-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const target = document.getElementById("brand-" + card.dataset.brand.replace(/\s+/g,"-"));
+      if(target) target.scrollIntoView({behavior:"smooth"});
+    });
+  });
+}
+
+function productCard(p){
+  const descuento = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : null;
+  return `
+    <div class="card">
+      <div class="card-media">
+        ${descuento ? `<div class="discount-badge">-${descuento}%</div>` : ""}
+        ${p.tag && !descuento ? `<div class="tag-badge">${p.tag}</div>` : ""}
+        ${p.foto ? `<img src="${p.foto}">` : sneakerSVG()}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        ${p.sizes.length ? `<div class="card-sizes">Talla ${p.sizes.join(", ")}</div>` : ""}
+        <div class="card-price">
+          <span class="price-now">${money(p.price)}</span>
+          ${p.oldPrice ? `<span class="price-old">${money(p.oldPrice)}</span>` : ""}
+        </div>
+        <a class="card-cta" target="_blank" href="https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent('Hola! Me interesa: ' + p.name)}">Consultar</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderBrandSections(filtro){
+  const el = document.getElementById("brandSections");
+  const term = (filtro || "").trim().toLowerCase();
+  const porMarca = {};
+  products.forEach(p => {
+    if(term && !p.name.toLowerCase().includes(term)) return;
+    if(!porMarca[p.brand]) porMarca[p.brand] = [];
+    porMarca[p.brand].push(p);
+  });
+  const marcasAMostrar = brands.map(b=>b.marca).filter(m => porMarca[m] && porMarca[m].length);
+
+  if(marcasAMostrar.length === 0){
+    el.innerHTML = `<p class="empty-msg">No se encontraron productos.</p>`;
+    return;
+  }
+
+  el.innerHTML = marcasAMostrar.map(marca => `
+    <div class="brand-section" id="brand-${marca.replace(/\s+/g,"-")}">
+      <div class="brand-section-head">
+        <h2>${marca}</h2>
+        <span class="brand-count">${porMarca[marca].length} producto(s)</span>
+      </div>
+      <div class="grid">
+        ${porMarca[marca].map(productCard).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("searchToggle").addEventListener("click", () => {
+  const bar = document.getElementById("searchBar");
+  bar.classList.toggle("open");
+  if(bar.classList.contains("open")) document.getElementById("searchInput").focus();
+});
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  renderBrandSections(e.target.value);
+});
+
+cargarDatos(() => {
+  renderCarousel();
+  renderBrandsGrid();
+  renderBrandSections("");
+});
+</script>
+
+</body>
+</html>
