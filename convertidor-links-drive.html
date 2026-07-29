@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convertidor de links de Drive</title>
+<style>
+  body{
+    font-family: sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #18181B;
+    background: #FAFAF9;
+  }
+  h1{ font-size: 20px; margin-bottom: 4px; }
+  p.sub{ color: #666; font-size: 14px; margin-top: 0; margin-bottom: 24px; }
+  label{ font-size: 13px; font-weight: 600; display:block; margin-bottom: 6px; }
+  textarea{
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: monospace;
+  }
+  .resultado{
+    margin-top: 20px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 13px;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .resultado-texto{ flex: 1; }
+  .btn-copiar{
+    flex-shrink: 0;
+    padding: 8px 12px;
+    background: #18181B;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .btn-copiar:hover{ background: #C1543C; }
+  .btn-copiar.copiado{ background: #2F8F5B; }
+  button{
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: #18181B;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover{ background: #C1543C; }
+  .error{ color: #C1543C; font-weight: 600; }
+  .preview{ margin-top: 16px; }
+  .preview img{ max-width: 100%; max-height: 250px; border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<h1>Convertidor de links de Google Drive</h1>
+<p class="sub">Pegá el link que te da Drive al compartir una foto, y te doy el link listo para pegar en tu Google Sheets.</p>
+
+<label>Pegá acá el link de Drive:</label>
+<textarea id="input" rows="3" placeholder="https://drive.google.com/file/d/AbCdEfG/view?usp=sharing"></textarea>
+
+<button onclick="convertir()">Convertir</button>
+
+<div class="resultado" id="resultadoBox" style="display:none;">
+  <span class="resultado-texto" id="resultado"></span>
+  <button class="btn-copiar" id="btnCopiar" onclick="copiar()">Copiar</button>
+</div>
+<div id="errorBox"></div>
+<div class="preview" id="preview"></div>
+
+<script>
+let ultimoLink = "";
+
+function convertir(){
+  const input = document.getElementById('input').value.trim();
+  const resultadoBox = document.getElementById('resultadoBox');
+  const resultado = document.getElementById('resultado');
+  const errorBox = document.getElementById('errorBox');
+  const preview = document.getElementById('preview');
+  const btnCopiar = document.getElementById('btnCopiar');
+  preview.innerHTML = "";
+  errorBox.innerHTML = "";
+  resultadoBox.style.display = "none";
+  btnCopiar.textContent = "Copiar";
+  btnCopiar.classList.remove("copiado");
+
+  const match = input.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+  if(!match){
+    errorBox.innerHTML = '<p class="error">No encontré un ID válido en ese link. Asegurate de pegar el link completo que te da Drive al compartir (el que tiene "/d/" en el medio).</p>';
+    return;
+  }
+
+  const id = match[1];
+  ultimoLink = `https://drive.google.com/uc?export=view&id=${id}`;
+  resultado.textContent = ultimoLink;
+  resultadoBox.style.display = "flex";
+  preview.innerHTML = `<p style="font-size:12px;color:#666;">Vista previa (si no carga, la imagen no está compartida como "Cualquier persona con el enlace"):</p><img src="${ultimoLink}">`;
+}
+
+function copiar(){
+  if(!ultimoLink) return;
+  navigator.clipboard.writeText(ultimoLink).then(() => {
+    const btnCopiar = document.getElementById('btnCopiar');
+    btnCopiar.textContent = "¡Copiado!";
+    btnCopiar.classList.add("copiado");
+    setTimeout(() => {
+      btnCopiar.textContent = "Copiar";
+      btnCopiar.classList.remove("copiado");
+    }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>
