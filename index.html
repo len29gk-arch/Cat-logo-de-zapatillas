@@ -8,14 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #FAFAF9;
-    --ink: #18181B;
-    --accent: #C1543C;
-    --stone: #F2F1EC;
-    --stone-dark: #E5E5E2;
-    --muted: #8A8A85;
-    --muted-2: #B4B4AF;
-    --white: #FFFFFF;
+    --bg: #141816;
+    --ink: #EAEDE9;
+    --accent: #4FC38A;
+    --stone: #1E2521;
+    --stone-dark: #283029;
+    --muted: #8B978F;
+    --muted-2: #5C6862;
+    --white: #1E2521;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
@@ -25,7 +25,7 @@
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{ max-width:1120px; margin:0 auto; padding:0 30px; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; }
 
   /* ---------- HEADER ---------- */
   header{
@@ -122,16 +122,32 @@
     gap:12px;
   }
   .brand-card{
-    height:90px;
+    height:104px;
     background:var(--stone);
     border:1px solid var(--stone-dark);
+    border-radius:10px;
     display:flex; align-items:center; justify-content:center;
     cursor:pointer;
     position:relative;
     overflow:hidden;
+    transition:transform .2s ease, border-color .2s ease;
   }
-  .brand-card:hover{ border-color:var(--ink); }
-  .brand-card img{ max-width:70%; max-height:60%; object-fit:contain; }
+  .brand-card:hover{ border-color:var(--ink); transform:scale(1.03); }
+  .brand-card::before{
+    content:"";
+    position:absolute;
+    inset:6%;
+    background:
+      radial-gradient(circle at 38% 42%, rgba(242,241,236,0.9) 0%, transparent 65%),
+      radial-gradient(circle at 65% 60%, rgba(79,195,138,0.4) 0%, transparent 60%),
+      radial-gradient(circle at 55% 30%, rgba(255,255,255,0.5) 0%, transparent 55%);
+    filter:blur(14px);
+    z-index:0;
+  }
+  .brand-card img{
+    position:relative; z-index:1;
+    max-width:82%; max-height:72%; object-fit:contain;
+  }
   .brand-card span{
     font-family:'Archivo',sans-serif; font-weight:700; font-size:14px;
     text-transform:uppercase;
@@ -158,27 +174,41 @@
   .card{
     background:var(--white);
     border:1px solid var(--stone-dark);
+    border-radius:10px;
+    overflow:hidden;
     display:flex; flex-direction:column;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .card:hover{
+    transform:scale(1.03);
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
   }
   .card-media{
     aspect-ratio:1/1;
     position:relative;
     background:var(--stone);
     display:flex; align-items:center; justify-content:center;
-    padding:14px;
+    padding:20px;
   }
-  .card-media img, .card-media svg{ max-width:100%; max-height:100%; object-fit:contain; }
+  .card-media img, .card-media svg{
+    max-width:80%; max-height:80%;
+    width:auto; height:auto;
+    object-fit:contain;
+    object-position:center;
+  }
   .discount-badge{
     position:absolute; top:8px; right:8px;
     background:var(--accent); color:var(--white);
     font-size:11px; font-weight:600;
     padding:3px 6px;
+    border-radius:6px;
   }
   .tag-badge{
     position:absolute; top:8px; left:8px;
     background:var(--ink); color:var(--white);
     font-size:10px; text-transform:uppercase; letter-spacing:0.05em;
     padding:3px 6px;
+    border-radius:6px;
   }
   .card-body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
   .card-name{ font-size:13px; font-weight:600; line-height:1.3; }
@@ -192,6 +222,8 @@
     background:var(--ink); color:var(--white);
     font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
     padding:9px; text-decoration:none;
+    border-radius:6px;
+    transition:background .2s ease;
   }
   .card-cta:hover{ background:var(--accent); }
 
@@ -201,11 +233,13 @@
   .wa-float{
     position:fixed; bottom:22px; right:22px; z-index:60;
     width:52px; height:52px;
-    background:var(--ink); color:var(--white);
+    border-radius:50%;
+    background:var(--accent); color:var(--bg);
     display:flex; align-items:center; justify-content:center;
     text-decoration:none; font-size:22px;
+    transition:transform .2s ease, background .2s ease;
   }
-  .wa-float:hover{ background:var(--accent); }
+  .wa-float:hover{ background:#3AA873; transform:scale(1.08); }
 
   footer{
     margin-top:60px; padding:28px 0 50px;
@@ -215,13 +249,11 @@
   }
 
   @media (max-width:640px){
-    .wrap{ padding:0 24px; }
     .slide-info{ max-width:60%; }
     .slide-name{ font-size:20px; }
     .slide-photo{ width:38%; }
     .carousel{ height:190px; }
-}
-  
+  }
 </style>
 </head>
 <body>
@@ -229,9 +261,9 @@
 <header>
   <div class="wrap header-row">
     <div class="logo" style="display:flex; align-items:center; gap:8px;">
-  <img src="https://drive.google.com/thumbnail?id=1VJkz_9Wpos20OtPM881HRsNnaPGYbwJC&sz=w1000" style="height:45px; display:block;">
-  <span>TU ESTILO 70</span>
-</div>
+      <img src="https://drive.google.com/thumbnail?id=1VJkz_9Wpos20OtPM881HRsNnaPGYbwJC&sz=w1000" style="height:32px; display:block; background:#F2F1EC; border-radius:6px; padding:3px;">
+      <span>TU ESTILO 70</span>
+    </div>
     <div class="header-actions">
       <div class="search-bar" id="searchBar">
         <input type="text" id="searchInput" placeholder="Buscar producto...">
@@ -252,7 +284,7 @@
   <div id="brandSections"></div>
 </div>
 
-<a href="https://wa.me/51984546373" class="wa-float" target="_blank" aria-label="WhatsApp">
+<a href="https://wa.me/51929862374" class="wa-float" target="_blank" aria-label="WhatsApp">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.05 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.2 8.2 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23M8.53 7.33c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.03 0 1.2.87 2.36.99 2.52.12.16 1.7 2.6 4.15 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.09.47-.07 1.44-.59 1.64-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.63-1.19-1.42-1.33-1.66-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.47-.39-.4-.54-.41-.14-.01-.3-.01-.46-.01"/></svg>
 </a>
 
@@ -272,7 +304,7 @@
 const SHEET_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXNG_wi5fYQ613ZRceRZh8sH20MnK2gyqCuBZG5_Z2jivNFeOcz0SYFLe9bk69oLI33vWNMxhwyJ9s/pub?gid=0&single=true&output=csv";
 const SHEET_MARCAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTXNG_wi5fYQ613ZRceRZh8sH20MnK2gyqCuBZG5_Z2jivNFeOcz0SYFLe9bk69oLI33vWNMxhwyJ9s/pub?gid=1486876337&single=true&output=csv";
 
-const numeroWhatsapp = "51984546373";
+const numeroWhatsapp = "51929862374";
 
 const productosDeEjemplo = [
   { name:"Runner Classic", brand:"NIKE", price:45000, oldPrice:52000, sizes:["40","41","42"], tag:"nuevo", foto:null },
@@ -336,7 +368,7 @@ function money(n){ return "S/ " + n.toLocaleString("es-PE"); }
 
 function sneakerSVG(){
   return `<svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 45 C5 35, 15 32, 22 30 L45 18 C50 15, 58 14, 63 17 L80 27 C88 30, 95 33, 95 42 L95 48 C95 51, 92 53, 89 53 L10 53 C7 53, 5 51, 5 48 Z" fill="#D6D5CE"/>
+    <path d="M5 45 C5 35, 15 32, 22 30 L45 18 C50 15, 58 14, 63 17 L80 27 C88 30, 95 33, 95 42 L95 48 C95 51, 92 53, 89 53 L10 53 C7 53, 5 51, 5 48 Z" fill="#3E4842"/>
   </svg>`;
 }
 
@@ -370,6 +402,7 @@ function renderCarousel(){
   }
   dots.forEach(d => d.addEventListener("click", ()=> ir(Number(d.dataset.i))));
   setInterval(()=> ir((actual+1) % slides.length), 4500);
+  procesarImagenesAutoCrop();
 }
 
 function renderBrandsGrid(){
@@ -403,7 +436,7 @@ function productCard(p){
           <span class="price-now">${money(p.price)}</span>
           ${p.oldPrice ? `<span class="price-old">${money(p.oldPrice)}</span>` : ""}
         </div>
-        <a class="card-cta" target="_blank" href="https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent('Hola! Me interesa: ' + p.name)}">Consultar</a>
+        <a class="card-cta" target="_blank" href="https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent('Hola, estoy interesado en el producto: ' + p.name + '. ¿Me podrías dar más información?')}">Consultar</a>
       </div>
     </div>
   `;
@@ -436,6 +469,95 @@ function renderBrandSections(filtro){
       </div>
     </div>
   `).join("");
+
+  procesarImagenesAutoCrop();
+}
+
+/* =========================================================
+   RECORTE AUTOMÁTICO DE ESPACIO EN BLANCO ALREDEDOR DEL PRODUCTO
+   - Escanea los 4 bordes de la imagen buscando dónde termina
+     el fondo (comparado con el color de la esquina) y empieza el producto.
+   - Recorta a ese recuadro, para que el producto ocupe más espacio
+     y se vea consistente entre fotos distintas.
+   - Si la imagen no tiene permiso de acceso a píxeles (típico en
+     algunos links de Google Drive), simplemente no se recorta
+     y se deja la foto tal cual, sin romper nada.
+========================================================= */
+function autoCropImage(src, callback){
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = function(){
+    try{
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(0, 0, w, h).data;
+
+      const bgR = data[0], bgG = data[1], bgB = data[2];
+      const umbral = 18;
+      function esFondo(i){
+        return Math.abs(data[i]-bgR) < umbral && Math.abs(data[i+1]-bgG) < umbral && Math.abs(data[i+2]-bgB) < umbral;
+      }
+
+      let top=0, bottom=h-1, left=0, right=w-1;
+
+      busqTop:
+      for(let y=0; y<h; y++){
+        for(let x=0; x<w; x+=2){
+          if(!esFondo((y*w+x)*4)){ top=y; break busqTop; }
+        }
+      }
+      busqBottom:
+      for(let y=h-1; y>=0; y--){
+        for(let x=0; x<w; x+=2){
+          if(!esFondo((y*w+x)*4)){ bottom=y; break busqBottom; }
+        }
+      }
+      busqLeft:
+      for(let x=0; x<w; x++){
+        for(let y=0; y<h; y+=2){
+          if(!esFondo((y*w+x)*4)){ left=x; break busqLeft; }
+        }
+      }
+      busqRight:
+      for(let x=w-1; x>=0; x--){
+        for(let y=0; y<h; y+=2){
+          if(!esFondo((y*w+x)*4)){ right=x; break busqRight; }
+        }
+      }
+
+      const pad = Math.round(Math.min(w,h) * 0.04);
+      left = Math.max(0, left-pad);
+      top = Math.max(0, top-pad);
+      right = Math.min(w-1, right+pad);
+      bottom = Math.min(h-1, bottom+pad);
+
+      const cw = right-left, ch = bottom-top;
+      if(cw <= 10 || ch <= 10){ callback(null); return; }
+
+      const outCanvas = document.createElement("canvas");
+      outCanvas.width = cw; outCanvas.height = ch;
+      outCanvas.getContext("2d").drawImage(canvas, left, top, cw, ch, 0, 0, cw, ch);
+      callback(outCanvas.toDataURL());
+    }catch(e){
+      callback(null); // imagen bloqueada por CORS u otro error: se deja tal cual
+    }
+  };
+  img.onerror = function(){ callback(null); };
+  img.src = src;
+}
+
+function procesarImagenesAutoCrop(){
+  document.querySelectorAll(".card-media img, .slide-photo img").forEach(imgEl => {
+    if(imgEl.dataset.autocropped) return;
+    imgEl.dataset.autocropped = "1";
+    const original = imgEl.src;
+    autoCropImage(original, (recortada) => {
+      if(recortada) imgEl.src = recortada;
+    });
+  });
 }
 
 document.getElementById("searchToggle").addEventListener("click", () => {
