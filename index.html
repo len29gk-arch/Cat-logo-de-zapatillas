@@ -164,6 +164,28 @@
     font-family:'Archivo',sans-serif; font-weight:800; font-size:20px;
     text-transform:uppercase; letter-spacing:0.3px;
   }
+
+  .talla-chips{
+    display:flex; gap:8px; flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .talla-chip{
+    font-family:'Inter',sans-serif;
+    font-size:12px; font-weight:600;
+    padding:6px 14px;
+    border-radius:20px;
+    border:1px solid var(--stone-dark);
+    background:var(--stone);
+    color:var(--muted);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .talla-chip:hover{ border-color:var(--accent); }
+  .talla-chip.activo{
+    background:var(--accent);
+    color:var(--bg);
+    border-color:var(--accent);
+  }
   .brand-count{ font-size:12px; color:var(--muted); }
 
   .grid{
@@ -496,8 +518,9 @@ function renderBrandsGrid(){
 
 function productCard(p){
   const descuento = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : null;
+  const tallasAttr = p.sizes.join(",");
   return `
-    <div class="card">
+    <div class="card" data-tallas="${tallasAttr}">
       <div class="card-media">
         ${descuento ? `<div class="discount-badge">-${descuento}%</div>` : ""}
         ${p.tag && !descuento ? `<div class="tag-badge">${p.tag}</div>` : ""}
@@ -517,6 +540,46 @@ function productCard(p){
 }
 
 const PRODUCTOS_INICIALES_POR_MARCA = 8;
+const RANGOS_TALLA = [
+  { label:"22 al 27", min:22, max:27 },
+  { label:"28 al 34", min:28, max:34 },
+  { label:"35 al 38", min:35, max:38 },
+  { label:"39 al 42", min:39, max:42 },
+  { label:"43 al 46", min:43, max:46 },
+];
+
+function tallaEnRango(talla, rango){
+  const n = parseFloat(talla);
+  return !isNaN(n) && n >= rango.min && n <= rango.max;
+}
+
+function productoTieneTallaEnRango(producto, rango){
+  return producto.sizes.some(t => tallaEnRango(t, rango));
+}
+
+function pintarGridDeMarca(idSeccion, marca, listaCompleta){
+  const grid = document.getElementById("grid-" + idSeccion);
+  const contenedor = document.getElementById(idSeccion);
+  const visibles = listaCompleta.slice(0, PRODUCTOS_INICIALES_POR_MARCA);
+  grid.innerHTML = visibles.map(productCard).join("");
+
+  const btnViejo = contenedor.querySelector(".btn-mostrar-mas");
+  if(btnViejo) btnViejo.remove();
+
+  if(listaCompleta.length > PRODUCTOS_INICIALES_POR_MARCA){
+    const btn = document.createElement("button");
+    btn.className = "btn-mostrar-mas";
+    btn.textContent = "Mostrar más productos";
+    btn.addEventListener("click", () => {
+      const restantes = listaCompleta.slice(grid.children.length);
+      grid.insertAdjacentHTML("beforeend", restantes.map(productCard).join(""));
+      procesarImagenesAutoCrop();
+      btn.remove();
+    });
+    contenedor.appendChild(btn);
+  }
+  procesarImagenesAutoCrop();
+}
 
 function renderBrandSections(filtro){
   const el = document.getElementById("brandSections");
@@ -536,19 +599,24 @@ function renderBrandSections(filtro){
 
   el.innerHTML = marcasAMostrar.map(marca => {
     const productosMarca = porMarca[marca];
-    const hayMas = productosMarca.length > PRODUCTOS_INICIALES_POR_MARCA;
-    const visibles = productosMarca.slice(0, PRODUCTOS_INICIALES_POR_MARCA);
     const idSeccion = "brand-" + marca.replace(/\s+/g,"-");
+    const rangosDisponibles = RANGOS_TALLA.filter(r => productosMarca.some(p => productoTieneTallaEnRango(p, r)));
+
     return `
     <div class="brand-section" id="${idSeccion}" data-marca="${marca}">
       <div class="brand-section-head">
         <h2>${marca}</h2>
         <span class="brand-count">${productosMarca.length} producto(s)</span>
       </div>
+      ${rangosDisponibles.length ? `
+      <div class="talla-chips" data-marca="${marca}">
+        <button class="talla-chip activo" data-rango="todas">Todas</button>
+        ${rangosDisponibles.map(r => `<button class="talla-chip" data-rango="${r.label}">${r.label}</button>`).join("")}
+      </div>` : ""}
       <div class="grid" id="grid-${idSeccion}">
-        ${visibles.map(productCard).join("")}
+        ${productosMarca.slice(0, PRODUCTOS_INICIALES_POR_MARCA).map(productCard).join("")}
       </div>
-      ${hayMas ? `<button class="btn-mostrar-mas" data-marca="${marca}">Mostrar más productos</button>` : ""}
+      ${productosMarca.length > PRODUCTOS_INICIALES_POR_MARCA ? `<button class="btn-mostrar-mas" data-marca="${marca}">Mostrar más productos</button>` : ""}
     </div>
   `;
   }).join("");
@@ -564,6 +632,24 @@ function renderBrandSections(filtro){
       grid.insertAdjacentHTML("beforeend", restantes.map(productCard).join(""));
       procesarImagenesAutoCrop();
       btn.remove();
+    });
+  });
+
+  el.querySelectorAll(".talla-chips").forEach(contenedorChips => {
+    const marca = contenedorChips.dataset.marca;
+    const idSeccion = "brand-" + marca.replace(/\s+/g,"-");
+    contenedorChips.querySelectorAll(".talla-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        contenedorChips.querySelectorAll(".talla-chip").forEach(c => c.classList.remove("activo"));
+        chip.classList.add("activo");
+        const rangoLabel = chip.dataset.rango;
+        let listaFiltrada = porMarca[marca];
+        if(rangoLabel !== "todas"){
+          const rango = RANGOS_TALLA.find(r => r.label === rangoLabel);
+          listaFiltrada = porMarca[marca].filter(p => productoTieneTallaEnRango(p, rango));
+        }
+        pintarGridDeMarca(idSeccion, marca, listaFiltrada);
+      });
     });
   });
 }
